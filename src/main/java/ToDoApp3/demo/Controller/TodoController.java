@@ -6,6 +6,7 @@ import ToDoApp3.demo.Model.User;
 import ToDoApp3.demo.Repository.TodoRepo;
 import ToDoApp3.demo.Repository.UserRepo;
 import ToDoApp3.demo.Service.TodoService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/usertodos")
+@RequestMapping("/todos")
 public class TodoController {
 
     private TodoService service;
@@ -50,5 +51,25 @@ public class TodoController {
     @PatchMapping("{todoId}/complete")
     public Todo markTodoAsCompleted(@PathVariable Long todoId, Authentication authentication) {
         return service.markTodoAsCompleted(todoId, authentication.getName());
+    }
+
+    //@GetMapping("/active")
+    //public List<Todo> getActiveTodos(Authentication auth) {
+        //return service.getActiveTodos(auth.getName());
+   // }
+
+    @GetMapping("/completed")
+    public List<Todo> getCompletedTodos(Authentication authentication) {
+        return service.getCompletedTodos(authentication.getName());
+    }
+
+    @GetMapping("/active")
+    public Page<Todo> getActiveTodos(
+            Authentication auth,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        User user = userRepo.findByUsername(auth.getName());
+        return service.getActiveTodos(user, page, size);
     }
 }

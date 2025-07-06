@@ -6,6 +6,10 @@ import ToDoApp3.demo.Model.User;
 import ToDoApp3.demo.Repository.TodoRepo;
 import ToDoApp3.demo.Repository.UserRepo;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -69,5 +73,22 @@ public class TodoService {
 
         todo.setCompleted(true);
         return todoRepo.save(todo);
+    }
+
+
+
+    //public List<Todo> getActiveTodos(String username) {
+        //User user = userRepo.findByUsername(username);
+        //return todoRepo.findByUserAndActive(user);
+
+    //}
+
+    public List<Todo> getCompletedTodos(String username) {
+        User user = userRepo.findByUsername(username);
+        return todoRepo.findByUserAndCompleted(user);
+    }
+
+    public Page<Todo> getActiveTodos(User user, int page, int size) {
+        return todoRepo.findByUserAndCompletedFalse(user, PageRequest.of(page, size , Sort.by("dueDate").ascending()));
     }
 }
