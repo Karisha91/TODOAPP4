@@ -32,17 +32,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf.disable()) //
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/register").permitAll()
                         .anyRequest().authenticated()
                 )
-                .httpBasic(Customizer.withDefaults()) // Enable Basic Auth for API requests
-                .formLogin(form -> form
-                        .loginPage("/login").permitAll() // Keep form login for browser
-                )
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/**") // Disable CSRF for API endpoints
-                );
+                .httpBasic(Customizer.withDefaults())
+                .formLogin(Customizer.withDefaults());// Enable Basic Auth for API requests
+
 
         return http.build();
     }
